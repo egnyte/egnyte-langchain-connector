@@ -1,0 +1,8 @@
+[flake8]
+max-line-length = 88
+extend-ignore = E203, W503
+exclude = .venv, __pycache__, .git, .pytest_cache, build, dist
+
+# More lenient settings for test files
+per-file-ignores =
+    tests/*:E501

@@ -1,7 +1,6 @@
 """LangChain standard unit tests for EgnyteRetriever."""
 
-from typing import List
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import pytest
 from langchain_core.documents import Document
@@ -12,7 +11,7 @@ from langchain_egnyte import EgnyteRetriever, EgnyteSearchOptions
 
 class TestEgnyteRetrieverLangChainStandardUnit:
     """LangChain standard unit tests for EgnyteRetriever.
-    
+
     These tests ensure compliance with LangChain's retriever interface
     without requiring external API access. They follow LangChain's
     testing patterns and standards.
@@ -27,15 +26,15 @@ class TestEgnyteRetrieverLangChainStandardUnit:
     def test_has_required_methods(self):
         """Test that EgnyteRetriever has all required LangChain methods."""
         retriever = EgnyteRetriever(domain="test.egnyte.com")
-        
+
         # Check required methods exist
-        assert hasattr(retriever, 'invoke')
-        assert hasattr(retriever, 'ainvoke')
-        assert hasattr(retriever, 'batch')
-        assert hasattr(retriever, 'abatch')
-        assert hasattr(retriever, 'stream')
-        assert hasattr(retriever, 'astream')
-        
+        assert hasattr(retriever, "invoke")
+        assert hasattr(retriever, "ainvoke")
+        assert hasattr(retriever, "batch")
+        assert hasattr(retriever, "abatch")
+        assert hasattr(retriever, "stream")
+        assert hasattr(retriever, "astream")
+
         # Check methods are callable
         assert callable(retriever.invoke)
         assert callable(retriever.ainvoke)
@@ -46,13 +45,11 @@ class TestEgnyteRetrieverLangChainStandardUnit:
         retriever = EgnyteRetriever(domain="test.egnyte.com")
         assert retriever.domain == "test.egnyte.com"
         assert retriever.timeout == 30.0  # default
-        
+
         # Test with all parameters
         search_options = EgnyteSearchOptions(limit=10)
         retriever = EgnyteRetriever(
-            domain="company.egnyte.com",
-            search_options=search_options,
-            timeout=60.0
+            domain="company.egnyte.com", search_options=search_options, timeout=60.0
         )
         assert retriever.domain == "company.egnyte.com"
         assert retriever.search_options == search_options
@@ -61,9 +58,9 @@ class TestEgnyteRetrieverLangChainStandardUnit:
     def test_invoke_returns_documents(self):
         """Test that invoke method returns List[Document]."""
         retriever = EgnyteRetriever(domain="test.egnyte.com")
-        
+
         # Mock the API response
-        with patch.object(retriever, '_make_api_request') as mock_api:
+        with patch.object(retriever, "_make_api_request") as mock_api:
             mock_api.return_value = {
                 "documents": [
                     {
@@ -73,15 +70,15 @@ class TestEgnyteRetrieverLangChainStandardUnit:
                             "title": "test.pdf",
                             "file_path": "/test.pdf",
                             "entry_id": "123",
-                            "score": 0.95
-                        }
+                            "score": 0.95,
+                        },
                     }
                 ]
             }
-            
+
             # Test invoke method
             result = retriever.invoke("test query", egnyte_user_token="test-token")
-            
+
             # Validate return type
             assert isinstance(result, list)
             assert len(result) == 1
@@ -95,7 +92,7 @@ class TestEgnyteRetrieverLangChainStandardUnit:
         retriever = EgnyteRetriever(domain="test.egnyte.com")
 
         # Mock the async API response method
-        with patch.object(retriever, '_amake_api_request') as mock_api:
+        with patch.object(retriever, "_amake_api_request") as mock_api:
             mock_api.return_value = {
                 "documents": [
                     {
@@ -105,14 +102,16 @@ class TestEgnyteRetrieverLangChainStandardUnit:
                             "title": "async.pdf",
                             "file_path": "/async.pdf",
                             "entry_id": "456",
-                            "score": 0.88
-                        }
+                            "score": 0.88,
+                        },
                     }
                 ]
             }
 
             # Test ainvoke method
-            result = await retriever.ainvoke("test query", egnyte_user_token="test-token")
+            result = await retriever.ainvoke(
+                "test query", egnyte_user_token="test-token"
+            )
 
             # Validate return type
             assert isinstance(result, list)
@@ -123,13 +122,13 @@ class TestEgnyteRetrieverLangChainStandardUnit:
     def test_k_parameter_support(self):
         """Test that k parameter works correctly."""
         retriever = EgnyteRetriever(domain="test.egnyte.com")
-        
-        with patch.object(retriever, '_make_api_request') as mock_api:
+
+        with patch.object(retriever, "_make_api_request") as mock_api:
             mock_api.return_value = {"documents": []}
-            
+
             # Test with k parameter
             retriever.invoke("test", k=5, egnyte_user_token="test-token")
-            
+
             # Verify k was passed to search options
             call_args = mock_api.call_args
             assert call_args is not None
@@ -137,16 +136,13 @@ class TestEgnyteRetrieverLangChainStandardUnit:
     def test_search_options_integration(self):
         """Test integration with EgnyteSearchOptions."""
         search_options = EgnyteSearchOptions(
-            limit=25,
-            folderPath="/test",
-            createdBy="user"
+            limit=25, folderPath="/test", createdBy="user"
         )
-        
+
         retriever = EgnyteRetriever(
-            domain="test.egnyte.com",
-            search_options=search_options
+            domain="test.egnyte.com", search_options=search_options
         )
-        
+
         assert retriever.search_options == search_options
         assert retriever.search_options.limit == 25
         assert retriever.search_options.folderPath == "/test"
@@ -161,14 +157,15 @@ class TestEgnyteRetrieverLangChainStandardUnit:
 
         # Test empty query handling (our implementation raises ValidationError)
         from langchain_egnyte.exceptions import ValidationError
+
         with pytest.raises(ValidationError, match="query must be 1-1000 characters"):
             retriever.invoke("", egnyte_user_token="test-token")
 
     def test_metadata_structure(self):
         """Test that returned documents have proper metadata structure."""
         retriever = EgnyteRetriever(domain="test.egnyte.com")
-        
-        with patch.object(retriever, '_make_api_request') as mock_api:
+
+        with patch.object(retriever, "_make_api_request") as mock_api:
             mock_api.return_value = {
                 "documents": [
                     {
@@ -180,22 +177,22 @@ class TestEgnyteRetrieverLangChainStandardUnit:
                             "entry_id": "abc123",
                             "score": 0.92,
                             "created_date": "2024-01-01",
-                            "modified_date": "2024-01-02"
-                        }
+                            "modified_date": "2024-01-02",
+                        },
                     }
                 ]
             }
-            
+
             result = retriever.invoke("test", egnyte_user_token="test-token")
             doc = result[0]
-            
+
             # Check required metadata fields
             assert "source" in doc.metadata
             assert "title" in doc.metadata
             assert "file_path" in doc.metadata
             assert "entry_id" in doc.metadata
             assert "score" in doc.metadata
-            
+
             # Check metadata values
             assert doc.metadata["source"] == "egnyte"
             assert isinstance(doc.metadata["score"], (int, float))
@@ -203,18 +200,18 @@ class TestEgnyteRetrieverLangChainStandardUnit:
     def test_serialization_compatibility(self):
         """Test that retriever can be serialized/deserialized (LangChain requirement)."""
         retriever = EgnyteRetriever(domain="test.egnyte.com")
-        
+
         # Test that retriever has required attributes for serialization
-        assert hasattr(retriever, 'domain')
-        assert hasattr(retriever, 'search_options')
-        assert hasattr(retriever, 'timeout')
-        
+        assert hasattr(retriever, "domain")
+        assert hasattr(retriever, "search_options")
+        assert hasattr(retriever, "timeout")
+
         # Test basic serialization compatibility
         config = {
             "domain": retriever.domain,
             "timeout": retriever.timeout,
         }
-        
+
         # Should be able to recreate from config
         new_retriever = EgnyteRetriever(**config)
         assert new_retriever.domain == retriever.domain

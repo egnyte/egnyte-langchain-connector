@@ -1,13 +1,15 @@
 """
 Egnyte LangChain SDK
 
-A Python SDK for integrating Egnyte document retrieval with LangChain applications.
+A Python SDK for integrating Egnyte document retrieval with LangChain
+applications.
 
 Copyright: Copyright (c) 2025 Egnyte Inc.
 
-This package provides a comprehensive SDK for LangChain integration with Egnyte
-document retrieval services. It offers both direct API access and LangChain-compatible
-retrievers for seamless integration with LangChain applications.
+This package provides a comprehensive SDK for LangChain integration with
+Egnyte document retrieval services. It offers both direct API access and
+LangChain-compatible retrievers for seamless integration with LangChain
+applications.
 
 IMPORTANT: This SDK requires LangChain as a mandatory dependency.
 The EgnyteRetriever class will not work without LangChain installed.

@@ -145,7 +145,7 @@ def run_security_checks():
 
     # Check if safety is installed
     try:
-        import safety
+        import safety  # noqa: F401
 
         success &= run_command(
             ["safety", "check"],
@@ -157,7 +157,7 @@ def run_security_checks():
 
     # Check if bandit is installed
     try:
-        import bandit
+        import bandit  # noqa: F401
 
         success &= run_command(
             ["bandit", "-r", "egnyte_retriever/"],
@@ -193,7 +193,7 @@ def run_build_test():
 
     # Check package
     try:
-        import twine
+        import twine  # noqa: F401
 
         success &= run_command(["twine", "check", "dist/*"], "Package validation")
     except ImportError:
@@ -212,7 +212,9 @@ def main():
     )
     parser.add_argument("--unit-only", action="store_true", help="Run only unit tests")
     parser.add_argument(
-        "--integration-only", action="store_true", help="Run only integration tests"
+        "--integration-only",
+        action="store_true",
+        help="Run only integration tests",
     )
     parser.add_argument(
         "--no-integration", action="store_true", help="Skip integration tests"

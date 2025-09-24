@@ -7,7 +7,6 @@ from langchain_egnyte.exceptions import (
     ConnectionError,
     LangChainAPIError,
     NotFoundError,
-    TimeoutError,
     ValidationError,
 )
 
@@ -47,9 +46,7 @@ class TestLangChainAPIError:
         """Test exception initialization with all parameters."""
         response_data = {"error": "Bad request", "code": "INVALID_PARAM"}
         error = LangChainAPIError(
-            "Complete error",
-            status_code=400,
-            response_data=response_data
+            "Complete error", status_code=400, response_data=response_data
         )
 
         assert str(error) == "[400] Complete error"
@@ -97,7 +94,7 @@ class TestAuthenticationError:
     def test_inheritance(self):
         """Test that AuthenticationError inherits from LangChainAPIError."""
         error = AuthenticationError("Auth error")
-        
+
         assert isinstance(error, LangChainAPIError)
         assert isinstance(error, AuthenticationError)
 
@@ -127,7 +124,7 @@ class TestValidationError:
     def test_inheritance(self):
         """Test that ValidationError inherits from LangChainAPIError."""
         error = ValidationError("Validation error")
-        
+
         assert isinstance(error, LangChainAPIError)
         assert isinstance(error, ValidationError)
 
@@ -154,7 +151,7 @@ class TestNotFoundError:
     def test_inheritance(self):
         """Test that NotFoundError inherits from LangChainAPIError."""
         error = NotFoundError("Not found error")
-        
+
         assert isinstance(error, LangChainAPIError)
         assert isinstance(error, NotFoundError)
 
@@ -206,26 +203,27 @@ class TestExceptionHierarchy:
             NotFoundError("test"),
             ConnectionError("test"),
         ]
-        
+
         for exc in exceptions:
             assert isinstance(exc, LangChainAPIError)
 
     def test_exception_catching(self):
         """Test that specific exceptions can be caught by base class."""
+
         def raise_auth_error():
             raise AuthenticationError("Auth failed")
-        
+
         def raise_validation_error():
             raise ValidationError("Validation failed")
-        
+
         # Test catching specific exception
         with pytest.raises(AuthenticationError):
             raise_auth_error()
-        
+
         # Test catching by base class
         with pytest.raises(LangChainAPIError):
             raise_auth_error()
-        
+
         with pytest.raises(LangChainAPIError):
             raise_validation_error()
 
@@ -233,8 +231,8 @@ class TestExceptionHierarchy:
         """Test that different exception types are distinct."""
         auth_error = AuthenticationError("Auth error")
         validation_error = ValidationError("Validation error")
-        
-        assert type(auth_error) != type(validation_error)
+
+        assert type(auth_error) is not type(validation_error)
         assert not isinstance(auth_error, ValidationError)
         assert not isinstance(validation_error, AuthenticationError)
 
@@ -268,7 +266,7 @@ class TestExceptionUsagePatterns:
             # Chain with our custom exception
             network_error = ConnectionError(f"Failed to connect: {e}")
             network_error.__cause__ = e
-            
+
             assert network_error.__cause__ is e
             assert "Network unreachable" in str(network_error)
 
@@ -283,7 +281,7 @@ class TestExceptionUsagePatterns:
             "status_code": error.status_code,
             "response_data": error.response_data,
             "errors": error.errors,
-            "type": type(error).__name__
+            "type": type(error).__name__,
         }
 
         assert error_dict["message"] == "Test error"

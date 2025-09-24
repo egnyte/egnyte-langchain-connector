@@ -26,12 +26,12 @@ from typing import Any, Dict, List, Optional
 import httpx
 
 try:
+    from langchain_core.callbacks.manager import (
+        AsyncCallbackManagerForRetrieverRun,
+        CallbackManagerForRetrieverRun,
+    )
     from langchain_core.documents import Document
     from langchain_core.retrievers import BaseRetriever
-    from langchain_core.callbacks.manager import (
-        CallbackManagerForRetrieverRun,
-        AsyncCallbackManagerForRetrieverRun,
-    )
 except ImportError as e:
     raise ImportError(
         "LangChain is required for this SDK. Please install it with:\n"
@@ -100,36 +100,32 @@ class EgnyteRetriever(BaseRetriever):
         search_options: Optional[EgnyteSearchOptions] = None,
         timeout: float = 30.0,
         k: int = 100,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         """
         Initialize the EgnyteRetriever.
 
         Args:
-            domain: Egnyte domain (e.g., "company.egnyte.com" or "https://company.egnyte.com")
-            search_options: Default search options for all queries (optional)
-            timeout: HTTP request timeout in seconds (default: 30.0)
-            k: Number of documents to return (default: 100, LangChain standard)
+            domain: Egnyte domain (e.g., "company.egnyte.com" or
+                "https://company.egnyte.com")
+            search_options: Default search options for all queries
+                (optional)
+            timeout: HTTP request timeout in seconds
+                (default: 30.0)
+            k: Number of documents to return
+                (default: 100, LangChain standard)
             **kwargs: Additional arguments passed to BaseRetriever
 
         Note:
-            User tokens are provided per search request, not stored in the retriever.
-            Search options can be provided per request for maximum flexibility.
+            User tokens are provided per search request, not stored in
+            the retriever.
+            Search options can be provided per request for maximum
+            flexibility.
         """
-        # Initialize with Pydantic model
-        super().__init__(
-            domain=domain,
-            search_options=search_options,
-            timeout=timeout,
-            k=k,
-            **kwargs,
+        # Initialize BaseRetriever with all arguments
+        super().__init__(  # type: ignore[call-arg]
+            domain=domain, search_options=search_options, timeout=timeout, k=k, **kwargs
         )
-
-        # Store configuration and construct base URL
-        self.domain = domain.strip()
-        self.search_options = search_options
-        self.timeout = timeout
-        self.k = k
 
         # Construct base URL from domain (not a Pydantic field)
         self._base_url = self._construct_base_url(self.domain)
@@ -170,7 +166,8 @@ class EgnyteRetriever(BaseRetriever):
         if ".egnyte.com" not in domain:
             raise ValueError(
                 f"Invalid Egnyte domain: {domain}. "
-                "Domain should be in format 'company.egnyte.com' or 'https://company.egnyte.com'"
+                "Domain should be in format 'company.egnyte.com' or "
+                "'https://company.egnyte.com'"
             )
 
         return domain
@@ -180,7 +177,7 @@ class EgnyteRetriever(BaseRetriever):
         """Get the constructed base URL."""
         return self._base_url
 
-    def _extract_request_id(self, response) -> Optional[str]:
+    def _extract_request_id(self, response: httpx.Response) -> Optional[str]:
         """
         Extract Egnyte request ID from response headers for troubleshooting.
 
@@ -195,19 +192,19 @@ class EgnyteRetriever(BaseRetriever):
         """
         # Common header names that might contain the request ID
         request_id_headers = [
-            'x-egnyte-request-id',  # Egnyte-specific
-            'x-request-id',         # Common standard
-            'request-id',           # Alternative standard
-            'x-correlation-id',     # Correlation tracking
-            'x-trace-id',           # Trace tracking
-            'x-amzn-requestid',     # AWS-based services
-            'x-amzn-trace-id',      # AWS X-Ray
+            "x-egnyte-request-id",  # Egnyte-specific
+            "x-request-id",  # Common standard
+            "request-id",  # Alternative standard
+            "x-correlation-id",  # Correlation tracking
+            "x-trace-id",  # Trace tracking
+            "x-amzn-requestid",  # AWS-based services
+            "x-amzn-trace-id",  # AWS X-Ray
         ]
 
         for header_name in request_id_headers:
             request_id = response.headers.get(header_name)
             if request_id:
-                return request_id
+                return str(request_id)
 
         return None
 
@@ -245,7 +242,7 @@ class EgnyteRetriever(BaseRetriever):
             Tuple of (request_data, headers) dictionaries
         """
         # Prepare base request data with query
-        request_data = {"query": query.strip()}
+        request_data: Dict[str, Any] = {"query": query.strip()}
 
         # Add search options (exclude_unset=True only includes explicitly set values)
         search_data = search_options.model_dump(exclude_unset=True)
@@ -261,7 +258,7 @@ class EgnyteRetriever(BaseRetriever):
 
         return request_data, headers
 
-    def _handle_response(self, response) -> Dict[str, Any]:
+    def _handle_response(self, response: httpx.Response) -> Dict[str, Any]:
         """
         Handle HTTP response and convert to appropriate exceptions.
 
@@ -279,7 +276,8 @@ class EgnyteRetriever(BaseRetriever):
             LangChainAPIError: For other unexpected status codes
         """
         if response.status_code == 200:
-            return response.json()
+            json_data = response.json()
+            return json_data if isinstance(json_data, dict) else {}
 
         # Extract request ID for troubleshooting
         request_id = self._extract_request_id(response)
@@ -294,14 +292,13 @@ class EgnyteRetriever(BaseRetriever):
                 )
             except (ValueError, AttributeError, TypeError):
                 raise AuthenticationError(
-                    f"Authentication failed - unable to parse error response{request_id_info}"
+                    f"Authentication failed - unable to parse error "
+                    f"response{request_id_info}"
                 )
         elif response.status_code == 422:
             try:
                 error_data = response.json()
-                error_message = error_data.get(
-                    "detail", "Request validation failed"
-                )
+                error_message = error_data.get("detail", "Request validation failed")
                 raise ValidationError(f"{error_message}{request_id_info}")
             except (ValueError, AttributeError, TypeError):
                 raise ValidationError(f"Request validation failed{request_id_info}")
@@ -323,7 +320,9 @@ class EgnyteRetriever(BaseRetriever):
         self._validate_request_inputs(query, egnyte_user_token)
 
         # Prepare request data and headers
-        request_data, headers = self._get_request_data(query, egnyte_user_token, search_options)
+        request_data, headers = self._get_request_data(
+            query, egnyte_user_token, search_options
+        )
 
         # Make API request
         try:
@@ -346,7 +345,9 @@ class EgnyteRetriever(BaseRetriever):
         except httpx.HTTPError as e:
             raise LangChainAPIError(f"HTTP error: {str(e)}")
 
-    def _process_response_documents(self, response_data: Dict[str, Any]) -> List[Document]:
+    def _process_response_documents(
+        self, response_data: Dict[str, Any]
+    ) -> List[Document]:
         """
         Process API response data and convert to LangChain Documents.
 
@@ -356,7 +357,7 @@ class EgnyteRetriever(BaseRetriever):
         Returns:
             List of LangChain Document objects
         """
-        documents = []
+        documents: List[Document] = []
         docs_data = response_data.get("documents", [])
         if not docs_data:
             return documents
@@ -387,7 +388,11 @@ class EgnyteRetriever(BaseRetriever):
         return documents
 
     def _get_relevant_documents(
-        self, query: str, *, run_manager: CallbackManagerForRetrieverRun, **kwargs
+        self,
+        query: str,
+        *,
+        run_manager: CallbackManagerForRetrieverRun,  # noqa: ARG002
+        **kwargs: Any,
     ) -> List[Document]:
         """
         Retrieve relevant documents for the given query.
@@ -409,9 +414,7 @@ class EgnyteRetriever(BaseRetriever):
         # Extract token from kwargs
         egnyte_user_token = kwargs.get("egnyte_user_token")
         if not egnyte_user_token:
-            raise ValueError(
-                "egnyte_user_token is required. Provide it in kwargs:\n"
-            )
+            raise ValueError("egnyte_user_token is required. Provide it in kwargs:\n")
 
         # Extract search options from kwargs if provided
         search_options = kwargs.get("search_options", EgnyteSearchOptions())
@@ -441,7 +444,11 @@ class EgnyteRetriever(BaseRetriever):
         )
 
     async def _aget_relevant_documents(
-        self, query: str, *, run_manager: AsyncCallbackManagerForRetrieverRun, **kwargs
+        self,
+        query: str,
+        *,
+        run_manager: AsyncCallbackManagerForRetrieverRun,  # noqa: ARG002
+        **kwargs: Any,
     ) -> List[Document]:
         """
         Asynchronously retrieve relevant documents for the given query.
@@ -463,9 +470,7 @@ class EgnyteRetriever(BaseRetriever):
         # Extract token from kwargs
         egnyte_user_token = kwargs.get("egnyte_user_token")
         if not egnyte_user_token:
-            raise ValueError(
-                "egnyte_user_token is required. Provide it in kwargs:\n"
-            )
+            raise ValueError("egnyte_user_token is required. Provide it in kwargs:\n")
 
         # Extract search options from kwargs if provided
         search_options = kwargs.get("search_options", EgnyteSearchOptions())
@@ -537,7 +542,8 @@ class EgnyteRetriever(BaseRetriever):
         search_options: Optional[EgnyteSearchOptions] = None,
     ) -> List[Document]:
         """
-        Asynchronously retrieve relevant documents with authentication provided per call.
+        Asynchronously retrieve relevant documents with authentication provided
+        per call.
 
         Args:
             query: The search query
@@ -575,7 +581,9 @@ class EgnyteRetriever(BaseRetriever):
         self._validate_request_inputs(query, egnyte_user_token)
 
         # Prepare request data and headers
-        request_data, headers = self._get_request_data(query, egnyte_user_token, search_options)
+        request_data, headers = self._get_request_data(
+            query, egnyte_user_token, search_options
+        )
 
         # Make async API request
         try:
@@ -601,22 +609,19 @@ class EgnyteRetriever(BaseRetriever):
         except httpx.HTTPError as e:
             raise LangChainAPIError(f"Async HTTP error: {str(e)}")
 
-    def close(self):
+    def close(self) -> None:
         """Close the HTTP clients."""
         if hasattr(self, "_http_client"):
             self._http_client.close()
 
-    def __del__(self):
+    def __del__(self) -> None:
         """Cleanup when object is destroyed."""
         self.close()
 
 
 def create_retriever_tool(
-    retriever: EgnyteRetriever,
-    name: str,
-    description: str,
-    egnyte_user_token: str
-):
+    retriever: EgnyteRetriever, name: str, description: str, egnyte_user_token: str
+) -> Any:
     """
     Create a LangChain tool from the EgnyteRetriever.
 

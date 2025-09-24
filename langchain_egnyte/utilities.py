@@ -3,8 +3,9 @@
 Application: Egnyte LangChain Retriever
 Copyright: Copyright (c) 2025 Egnyte Inc.
 
-This module provides configuration classes and utilities for the Egnyte retriever,
-following LangChain patterns while maintaining comprehensive functionality.
+This module provides configuration classes and utilities for the Egnyte
+retriever, following LangChain patterns while maintaining comprehensive
+functionality.
 """
 
 from __future__ import annotations
@@ -17,9 +18,9 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 class EgnyteSearchOptions(BaseModel):
     """Configuration options for Egnyte hybrid search operations.
 
-    This class provides comprehensive configuration options for filtering and customizing
-    search behavior when using the EgnyteRetriever. It follows LangChain patterns
-    while providing extensive Egnyte-specific functionality.
+    This class provides comprehensive configuration options for filtering and
+    customizing search behavior when using the EgnyteRetriever. It follows
+    LangChain patterns while providing extensive Egnyte-specific functionality.
 
     Example:
         Basic usage:
@@ -71,57 +72,57 @@ class EgnyteSearchOptions(BaseModel):
             chain = retriever | prompt | llm
     """
 
-
     limit: int = Field(
         default=100,
         ge=1,
         le=1000,
-        description="Maximum number of results to return. Must be between 1 and 1000."
+        description="Maximum number of results to return. Must be between 1 "
+        "and 1000.",
     )
 
     folderPath: Optional[str] = Field(
         default=None,
-        description="Restricts search to a specific folder path. Must be a valid CFS filesystem path."
+        description="Restricts search to a specific folder path. Must be a "
+        "valid CFS filesystem path.",
     )
 
     collectionId: Optional[str] = Field(
         default=None,
-        description="Restricts search to a specific collection (KBA)."
+        description="Restricts search to a specific collection (KBA).",
     )
 
     createdBy: Optional[str] = Field(
         default=None,
-        description="Filters results by creator username. Must be a user the requester can access."
+        description="Filters results by creator username. Must be a user "
+        "the requester can access.",
     )
 
     createdAfter: Optional[int] = Field(
         default=None,
-        description="Filters results to items created after this timestamp (Unix epoch in milliseconds)."
+        description="Filters results to items created after this timestamp "
+        "(Unix epoch in milliseconds).",
     )
 
     createdBefore: Optional[int] = Field(
         default=None,
-        description="Filters results to items created before this timestamp (Unix epoch in milliseconds)."
+        description="Filters results to items created before this timestamp "
+        "(Unix epoch in milliseconds).",
     )
 
     preferredFolderPath: Optional[str] = Field(
-        default=None,
-        description="Boosts results from this folder path."
+        default=None, description="Boosts results from this folder path."
     )
 
     excludeFolderPaths: Optional[List[str]] = Field(
-        default=None,
-        description="Excludes results from these folder paths."
+        default=None, description="Excludes results from these folder paths."
     )
 
     folderPaths: Optional[List[str]] = Field(
-        default=None,
-        description="Includes results only from these folder paths."
+        default=None, description="Includes results only from these folder paths."
     )
 
     entryIds: Optional[List[str]] = Field(
-        default=None,
-        description="Restricts search to specific entry IDs."
+        default=None, description="Restricts search to specific entry IDs."
     )
 
     model_config = {
@@ -130,7 +131,7 @@ class EgnyteSearchOptions(BaseModel):
         "str_strip_whitespace": True,
     }
 
-    @field_validator('folderPath', 'preferredFolderPath')
+    @field_validator("folderPath", "preferredFolderPath")
     @classmethod
     def validate_folder_path(cls, v: Optional[str]) -> Optional[str]:
         """Validate individual folder paths."""
@@ -138,15 +139,15 @@ class EgnyteSearchOptions(BaseModel):
             v = v.strip()
             if not v:
                 raise ValueError("Folder path cannot be empty")
-            if not v.startswith('/'):
+            if not v.startswith("/"):
                 raise ValueError("Folder path must start with '/'")
-            if v.endswith('/') and len(v) > 1:
-                v = v.rstrip('/')  # Remove trailing slash except for root
-            if '//' in v:
+            if v.endswith("/") and len(v) > 1:
+                v = v.rstrip("/")  # Remove trailing slash except for root
+            if "//" in v:
                 raise ValueError("Folder path cannot contain consecutive slashes")
         return v
 
-    @field_validator('excludeFolderPaths', 'folderPaths')
+    @field_validator("excludeFolderPaths", "folderPaths")
     @classmethod
     def validate_folder_path_lists(cls, v: Optional[List[str]]) -> Optional[List[str]]:
         """Validate folder path lists."""
@@ -162,12 +163,14 @@ class EgnyteSearchOptions(BaseModel):
                 path = path.strip()
                 if not path:
                     raise ValueError(f"Folder path at index {i} cannot be empty")
-                if not path.startswith('/'):
+                if not path.startswith("/"):
                     raise ValueError(f"Folder path at index {i} must start with '/'")
-                if path.endswith('/') and len(path) > 1:
-                    path = path.rstrip('/')  # Remove trailing slash except for root
-                if '//' in path:
-                    raise ValueError(f"Folder path at index {i} cannot contain consecutive slashes")
+                if path.endswith("/") and len(path) > 1:
+                    path = path.rstrip("/")  # Remove trailing slash except for root
+                if "//" in path:
+                    raise ValueError(
+                        f"Folder path at index {i} cannot contain consecutive slashes"
+                    )
 
                 validated_paths.append(path)
 
@@ -178,7 +181,7 @@ class EgnyteSearchOptions(BaseModel):
             return validated_paths
         return v
 
-    @field_validator('createdBy')
+    @field_validator("createdBy")
     @classmethod
     def validate_created_by(cls, v: Optional[str]) -> Optional[str]:
         """Validate created_by username."""
@@ -190,11 +193,15 @@ class EgnyteSearchOptions(BaseModel):
                 raise ValueError("Username cannot exceed 255 characters")
             # Basic username validation (alphanumeric, dots, hyphens, underscores)
             import re
-            if not re.match(r'^[a-zA-Z0-9._-]+$', v):
-                raise ValueError("Username can only contain letters, numbers, dots, hyphens, and underscores")
+
+            if not re.match(r"^[a-zA-Z0-9._-]+$", v):
+                raise ValueError(
+                    "Username can only contain letters, numbers, dots, "
+                    "hyphens, and underscores"
+                )
         return v
 
-    @field_validator('createdAfter')
+    @field_validator("createdAfter")
     @classmethod
     def validate_created_after(cls, v: Optional[int]) -> Optional[int]:
         """Validate createdAfter timestamp values."""
@@ -205,6 +212,7 @@ class EgnyteSearchOptions(BaseModel):
                 raise ValueError("Timestamp cannot be negative")
             # Check if timestamp is reasonable (not too far in the future)
             import time
+
             current_time_ms = int(time.time() * 1000)
             # Allow up to 10 years in the future
             max_future_time = current_time_ms + (10 * 365 * 24 * 60 * 60 * 1000)
@@ -212,7 +220,7 @@ class EgnyteSearchOptions(BaseModel):
                 raise ValueError("Timestamp is too far in the future")
         return v
 
-    @field_validator('createdBefore')
+    @field_validator("createdBefore")
     @classmethod
     def validate_created_before(cls, v: Optional[int]) -> Optional[int]:
         """Validate createdBefore timestamp values."""
@@ -224,7 +232,7 @@ class EgnyteSearchOptions(BaseModel):
             # No future date validation for createdBefore since it's an upper bound
         return v
 
-    @field_validator('collectionId')
+    @field_validator("collectionId")
     @classmethod
     def validate_collection_id(cls, v: Optional[str]) -> Optional[str]:
         """Validate collection ID."""
@@ -236,7 +244,7 @@ class EgnyteSearchOptions(BaseModel):
                 raise ValueError("Collection ID cannot exceed 100 characters")
         return v
 
-    @field_validator('entryIds')
+    @field_validator("entryIds")
     @classmethod
     def validate_entry_ids(cls, v: Optional[List[str]]) -> Optional[List[str]]:
         """Validate entry IDs list."""
@@ -253,7 +261,9 @@ class EgnyteSearchOptions(BaseModel):
                 if not entry_id:
                     raise ValueError(f"Entry ID at index {i} cannot be empty")
                 if len(entry_id) > 50:
-                    raise ValueError(f"Entry ID at index {i} cannot exceed 50 characters")
+                    raise ValueError(
+                        f"Entry ID at index {i} cannot exceed 50 characters"
+                    )
 
                 validated_ids.append(entry_id)
 
@@ -268,8 +278,8 @@ class EgnyteSearchOptions(BaseModel):
             return validated_ids
         return v
 
-    @model_validator(mode='after')
-    def validate_model(self) -> 'EgnyteSearchOptions':
+    @model_validator(mode="after")
+    def validate_model(self) -> "EgnyteSearchOptions":
         """Validate the entire model for business logic constraints."""
         # Validate timestamp order
         if self.createdAfter and self.createdBefore:
@@ -297,18 +307,25 @@ class EgnyteSearchOptions(BaseModel):
                 )
             if self.folderPaths and self.folderPath not in self.folderPaths:
                 raise ValueError(
-                    f"folderPath '{self.folderPath}' must be included in folderPaths when both are specified"
+                    f"folderPath '{self.folderPath}' must be included in "
+                    "folderPaths when both are specified"
                 )
 
         # Validate preferred folder path conflicts
         if self.preferredFolderPath:
-            if self.excludeFolderPaths and self.preferredFolderPath in self.excludeFolderPaths:
+            if (
+                self.excludeFolderPaths
+                and self.preferredFolderPath in self.excludeFolderPaths
+            ):
                 raise ValueError(
-                    f"preferredFolderPath '{self.preferredFolderPath}' cannot be in excludeFolderPaths"
+                    f"preferredFolderPath '{self.preferredFolderPath}' "
+                    "cannot be in excludeFolderPaths"
                 )
 
         # Validate reasonable combinations
-        if self.entryIds and (self.folderPath or self.folderPaths or self.excludeFolderPaths):
+        if self.entryIds and (
+            self.folderPath or self.folderPaths or self.excludeFolderPaths
+        ):
             # This is allowed but might be inefficient, so we could warn
             # For now, we'll allow it as it might be a valid use case
             pass

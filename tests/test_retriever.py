@@ -31,9 +31,7 @@ class TestEgnyteRetriever:
     def test_init_with_search_options(self):
         """Test retriever initialization with custom search options."""
         search_options = EgnyteSearchOptions(limit=50, folderPath="/test")
-        retriever = EgnyteRetriever(
-            domain=self.domain, search_options=search_options
-        )
+        retriever = EgnyteRetriever(domain=self.domain, search_options=search_options)
         assert retriever.search_options.limit == 50
         assert retriever.search_options.folderPath == "/test"
 
@@ -81,8 +79,8 @@ class TestEgnyteRetriever:
                         "entry_id": "123",
                         "score": 0.95,
                         "size": 1024,
-                        "content_type": "application/pdf"
-                    }
+                        "content_type": "application/pdf",
+                    },
                 }
             ]
         }
@@ -90,9 +88,7 @@ class TestEgnyteRetriever:
 
         # Test retrieval
         token = "test_token"
-        documents = self.retriever.get_relevant_documents_with_auth(
-            "test query", token
-        )
+        documents = self.retriever.get_relevant_documents_with_auth("test query", token)
 
         assert len(documents) == 1
         assert isinstance(documents[0], Document)
@@ -111,7 +107,9 @@ class TestEgnyteRetriever:
         mock_post.return_value = mock_response
 
         with pytest.raises(AuthenticationError) as exc_info:
-            self.retriever.get_relevant_documents_with_auth("test query", "invalid_token")
+            self.retriever.get_relevant_documents_with_auth(
+                "test query", "invalid_token"
+            )
 
         assert exc_info.value.status_code == 401
         assert "auth-error-123" in str(exc_info.value)  # Check request ID is included
@@ -123,7 +121,7 @@ class TestEgnyteRetriever:
         mock_response.status_code = 422
         mock_response.json.return_value = {
             "error": "Validation failed",
-            "details": ["Invalid query parameter"]
+            "details": ["Invalid query parameter"],
         }
 
         mock_client_instance = Mock()
@@ -132,7 +130,7 @@ class TestEgnyteRetriever:
 
         with pytest.raises(ValidationError) as exc_info:
             self.retriever.get_relevant_documents_with_auth("", "valid_token")
-        
+
         assert exc_info.value.status_code == 422
 
     @patch("langchain_egnyte.retriever.httpx.Client.post")
@@ -155,6 +153,7 @@ class TestEgnyteRetriever:
     def test_get_relevant_documents_network_error(self, mock_post):
         """Test network error handling."""
         import httpx
+
         mock_post.side_effect = httpx.ConnectError("Connection failed")
 
         # Network errors are wrapped in LangChainAPIError
@@ -171,13 +170,9 @@ class TestEgnyteRetriever:
     def test_retriever_with_custom_search_options(self):
         """Test retriever with custom search options."""
         search_options = EgnyteSearchOptions(
-            limit=25,
-            folderPath="/test",
-            collectionId="123"
+            limit=25, folderPath="/test", collectionId="123"
         )
-        retriever = EgnyteRetriever(
-            domain=self.domain, search_options=search_options
-        )
+        retriever = EgnyteRetriever(domain=self.domain, search_options=search_options)
 
         assert retriever.search_options.limit == 25
         assert retriever.search_options.folderPath == "/test"
@@ -187,15 +182,12 @@ class TestEgnyteRetriever:
     async def test_async_invoke(self):
         """Test async document retrieval via ainvoke."""
         # Mock the async API request method directly
-        with patch.object(self.retriever, '_amake_api_request') as mock_api:
+        with patch.object(self.retriever, "_amake_api_request") as mock_api:
             mock_api.return_value = {
                 "documents": [
                     {
                         "content": "async test content",
-                        "metadata": {
-                            "source": "egnyte",
-                            "title": "async_test.pdf"
-                        }
+                        "metadata": {"source": "egnyte", "title": "async_test.pdf"},
                     }
                 ]
             }

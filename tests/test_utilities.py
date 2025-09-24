@@ -1,7 +1,5 @@
 """Tests for EgnyteSearchOptions and utility functions."""
 
-from datetime import datetime
-
 import pytest
 
 from langchain_egnyte.utilities import EgnyteSearchOptions
@@ -36,7 +34,7 @@ class TestEgnyteSearchOptions:
             createdBefore=1672531200000,  # 2023-01-01
             preferredFolderPath="/preferred",
             excludeFolderPaths=["/exclude1", "/exclude2"],
-            entryIds=["id1", "id2"]
+            entryIds=["id1", "id2"],
         )
 
         assert options.limit == 50
@@ -56,11 +54,11 @@ class TestEgnyteSearchOptions:
         # Test minimum valid limit
         options = EgnyteSearchOptions(limit=1)
         assert options.limit == 1
-        
+
         # Test maximum valid limit
         options = EgnyteSearchOptions(limit=1000)
         assert options.limit == 1000
-        
+
         # Test typical limit
         options = EgnyteSearchOptions(limit=100)
         assert options.limit == 100
@@ -71,12 +69,12 @@ class TestEgnyteSearchOptions:
         with pytest.raises(ValueError) as exc_info:
             EgnyteSearchOptions(limit=0)
         assert "Input should be greater than or equal to 1" in str(exc_info.value)
-        
+
         # Test limit too high
         with pytest.raises(ValueError) as exc_info:
             EgnyteSearchOptions(limit=1001)
         assert "Input should be less than or equal to 1000" in str(exc_info.value)
-        
+
         # Test negative limit
         with pytest.raises(ValueError) as exc_info:
             EgnyteSearchOptions(limit=-1)
@@ -102,7 +100,7 @@ class TestEgnyteSearchOptions:
         with pytest.raises(ValueError) as exc_info:
             EgnyteSearchOptions(folderPath="relative/path")
         assert "Folder path must start with '/'" in str(exc_info.value)
-        
+
         # Test empty string
         with pytest.raises(ValueError) as exc_info:
             EgnyteSearchOptions(folderPath="")
@@ -124,7 +122,7 @@ class TestEgnyteSearchOptions:
         # Valid exclude paths
         options = EgnyteSearchOptions(excludeFolderPaths=["/temp", "/archive"])
         assert options.excludeFolderPaths == ["/temp", "/archive"]
-        
+
         # Invalid exclude path
         with pytest.raises(ValueError) as exc_info:
             EgnyteSearchOptions(excludeFolderPaths=["/valid", "invalid"])
@@ -135,7 +133,7 @@ class TestEgnyteSearchOptions:
         # Valid folder paths
         options = EgnyteSearchOptions(folderPaths=["/docs", "/images"])
         assert options.folderPaths == ["/docs", "/images"]
-        
+
         # Invalid folder path
         with pytest.raises(ValueError) as exc_info:
             EgnyteSearchOptions(folderPaths=["/valid", "invalid"])
@@ -147,7 +145,7 @@ class TestEgnyteSearchOptions:
         timestamp = 1640995200000  # 2022-01-01
         options = EgnyteSearchOptions(createdAfter=timestamp)
         assert options.createdAfter == timestamp
-        
+
         # Invalid timestamp (negative)
         with pytest.raises(ValueError) as exc_info:
             EgnyteSearchOptions(createdAfter=-1)
@@ -159,7 +157,7 @@ class TestEgnyteSearchOptions:
         timestamp = 1672531200000  # 2023-01-01
         options = EgnyteSearchOptions(createdBefore=timestamp)
         assert options.createdBefore == timestamp
-        
+
         # Invalid timestamp (negative)
         with pytest.raises(ValueError) as exc_info:
             EgnyteSearchOptions(createdBefore=-1)
@@ -170,16 +168,16 @@ class TestEgnyteSearchOptions:
         # Valid date range
         options = EgnyteSearchOptions(
             createdAfter=1640995200000,  # 2022-01-01
-            createdBefore=1672531200000   # 2023-01-01
+            createdBefore=1672531200000,  # 2023-01-01
         )
         assert options.createdAfter == 1640995200000
         assert options.createdBefore == 1672531200000
-        
+
         # Invalid date range (after > before)
         with pytest.raises(ValueError) as exc_info:
             EgnyteSearchOptions(
                 createdAfter=1672531200000,  # 2023-01-01
-                createdBefore=1640995200000   # 2022-01-01
+                createdBefore=1640995200000,  # 2022-01-01
             )
         assert "createdAfter must be less than createdBefore" in str(exc_info.value)
 
@@ -188,12 +186,12 @@ class TestEgnyteSearchOptions:
         # Valid entry IDs
         options = EgnyteSearchOptions(entryIds=["id1", "id2", "id3"])
         assert options.entryIds == ["id1", "id2", "id3"]
-        
+
         # Empty entry IDs list (invalid)
         with pytest.raises(ValueError) as exc_info:
             EgnyteSearchOptions(entryIds=[])
         assert "Entry IDs list cannot be empty" in str(exc_info.value)
-        
+
         # Non-string entry ID
         with pytest.raises(ValueError) as exc_info:
             EgnyteSearchOptions(entryIds=["valid", 123])
@@ -201,14 +199,10 @@ class TestEgnyteSearchOptions:
 
     def test_to_dict(self):
         """Test conversion to dictionary."""
-        options = EgnyteSearchOptions(
-            limit=50,
-            folderPath="/test",
-            collectionId="123"
-        )
-        
+        options = EgnyteSearchOptions(limit=50, folderPath="/test", collectionId="123")
+
         result = options.to_dict()
-        
+
         assert result["limit"] == 50
         assert result["folderPath"] == "/test"
         assert result["collectionId"] == "123"
@@ -219,10 +213,7 @@ class TestEgnyteSearchOptions:
     def test_to_dict_exclude_none(self):
         """Test dictionary conversion excludes unset values."""
         # Only set some values, leave others unset
-        options = EgnyteSearchOptions(
-            limit=100,
-            collectionId="123"
-        )
+        options = EgnyteSearchOptions(limit=100, collectionId="123")
 
         result = options.to_dict()
 
@@ -234,10 +225,7 @@ class TestEgnyteSearchOptions:
 
     def test_to_dict_include_non_empty_lists(self):
         """Test dictionary conversion includes non-empty lists."""
-        options = EgnyteSearchOptions(
-            folderPaths=["/test"],
-            entryIds=["id1", "id2"]
-        )
+        options = EgnyteSearchOptions(folderPaths=["/test"], entryIds=["id1", "id2"])
 
         result = options.to_dict()
 
@@ -249,7 +237,7 @@ class TestEgnyteSearchOptions:
         """Test string representation."""
         options = EgnyteSearchOptions(limit=50, folderPath="/test")
         repr_str = repr(options)
-        
+
         assert "EgnyteSearchOptions" in repr_str
         assert "limit=50" in repr_str
         assert "folderPath='/test'" in repr_str
@@ -259,14 +247,14 @@ class TestEgnyteSearchOptions:
         options1 = EgnyteSearchOptions(limit=50, folderPath="/test")
         options2 = EgnyteSearchOptions(limit=50, folderPath="/test")
         options3 = EgnyteSearchOptions(limit=100, folderPath="/test")
-        
+
         assert options1 == options2
         assert options1 != options3
 
     def test_copy_with_modifications(self):
         """Test creating a copy with modifications."""
         original = EgnyteSearchOptions(limit=50, folderPath="/test")
-        
+
         # Create a copy with different limit
         modified = EgnyteSearchOptions(
             limit=100,
@@ -278,9 +266,9 @@ class TestEgnyteSearchOptions:
             preferredFolderPath=original.preferredFolderPath,
             excludeFolderPaths=original.excludeFolderPaths,
             folderPaths=original.folderPaths,
-            entryIds=original.entryIds
+            entryIds=original.entryIds,
         )
-        
+
         assert modified.limit == 100
         assert modified.folderPath == "/test"
         assert original.limit == 50  # Original unchanged

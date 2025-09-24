@@ -68,7 +68,9 @@ class ValidationError(LangChainAPIError):
     """Raised when request validation fails."""
 
     def __init__(
-        self, message: str = "Request validation failed", errors: Optional[list] = None
+        self,
+        message: str = "Request validation failed",
+        errors: Optional[list] = None,
     ):
         super().__init__(message, status_code=422)
         self.errors = errors or []
