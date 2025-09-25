@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "langchain-egnyte"
+name = "egnyte-langchain-connector"
 version = "0.0.1"
 description = "LangChain retriever integration for Egnyte document search and retrieval"
 authors = [
