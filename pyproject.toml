@@ -60,7 +60,11 @@ docs = [
     "mkdocs-material>=9.4.8",
 ]
 all = [
-    "langchain-egnyte[openai,anthropic,azure,docs]",
+    "langchain-openai>=0.1.0",
+    "openai>=1.6.1",
+    "langchain-anthropic>=0.1.0",
+    "mkdocs>=1.5.3",
+    "mkdocs-material>=9.4.8",
 ]
 
 [project.urls]

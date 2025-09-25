@@ -332,6 +332,110 @@ wheels = [
 ]
 
 [[package]]
+name = "egnyte-langchain-connector"
+version = "0.0.1"
+source = { editable = "." }
+dependencies = [
+    { name = "httpx" },
+    { name = "langchain" },
+    { name = "langchain-core" },
+    { name = "langchain-tests" },
+    { name = "pydantic" },
+]
+
+[package.optional-dependencies]
+all = [
+    { name = "langchain-anthropic" },
+    { name = "langchain-openai" },
+    { name = "mkdocs" },
+    { name = "mkdocs-material" },
+    { name = "openai" },
+]
+anthropic = [
+    { name = "langchain-anthropic" },
+]
+azure = [
+    { name = "langchain-openai" },
+]
+docs = [
+    { name = "mkdocs" },
+    { name = "mkdocs-material" },
+]
+openai = [
+    { name = "langchain-openai" },
+    { name = "openai" },
+]
+test = [
+    { name = "langchain-tests" },
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
+    { name = "pytest-socket" },
+    { name = "python-dotenv" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "black" },
+    { name = "build" },
+    { name = "flake8" },
+    { name = "isort" },
+    { name = "langchain-tests" },
+    { name = "mypy" },
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
+    { name = "pytest-benchmark" },
+    { name = "pytest-cov" },
+    { name = "pytest-mock" },
+    { name = "pytest-recording" },
+    { name = "pytest-socket" },
+    { name = "python-dotenv" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "httpx", specifier = ">=0.24.0" },
+    { name = "langchain", specifier = ">=0.1.0" },
+    { name = "langchain-anthropic", marker = "extra == 'all'", specifier = ">=0.1.0" },
+    { name = "langchain-anthropic", marker = "extra == 'anthropic'", specifier = ">=0.1.0" },
+    { name = "langchain-core", specifier = ">=0.1.0" },
+    { name = "langchain-openai", marker = "extra == 'all'", specifier = ">=0.1.0" },
+    { name = "langchain-openai", marker = "extra == 'azure'", specifier = ">=0.1.0" },
+    { name = "langchain-openai", marker = "extra == 'openai'", specifier = ">=0.1.0" },
+    { name = "langchain-tests", specifier = ">=0.3.20" },
+    { name = "langchain-tests", marker = "extra == 'test'", specifier = ">=0.3.20" },
+    { name = "mkdocs", marker = "extra == 'all'", specifier = ">=1.5.3" },
+    { name = "mkdocs", marker = "extra == 'docs'", specifier = ">=1.5.3" },
+    { name = "mkdocs-material", marker = "extra == 'all'", specifier = ">=9.4.8" },
+    { name = "mkdocs-material", marker = "extra == 'docs'", specifier = ">=9.4.8" },
+    { name = "openai", marker = "extra == 'all'", specifier = ">=1.6.1" },
+    { name = "openai", marker = "extra == 'openai'", specifier = ">=1.6.1" },
+    { name = "pydantic", specifier = ">=2.0.0" },
+    { name = "pytest", marker = "extra == 'test'", specifier = ">=7.0.0" },
+    { name = "pytest-asyncio", marker = "extra == 'test'", specifier = ">=0.20.0" },
+    { name = "pytest-socket", marker = "extra == 'test'", specifier = ">=0.6.0" },
+    { name = "python-dotenv", marker = "extra == 'test'", specifier = ">=1.0.0" },
+]
+provides-extras = ["test", "openai", "anthropic", "azure", "docs", "all"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "black", specifier = ">=23.11.0" },
+    { name = "build", specifier = ">=1.3.0" },
+    { name = "flake8", specifier = ">=6.1.0" },
+    { name = "isort", specifier = ">=5.12.0" },
+    { name = "langchain-tests", specifier = ">=0.3.0" },
+    { name = "mypy", specifier = ">=1.7.1" },
+    { name = "pytest", specifier = ">=7.4.0" },
+    { name = "pytest-asyncio", specifier = ">=0.21.0" },
+    { name = "pytest-benchmark", specifier = ">=4.0.0" },
+    { name = "pytest-cov", specifier = ">=4.1.0" },
+    { name = "pytest-mock", specifier = ">=3.11.0" },
+    { name = "pytest-recording", specifier = ">=0.13.0" },
+    { name = "pytest-socket", specifier = ">=0.6.0" },
+    { name = "python-dotenv", specifier = ">=1.0.0" },
+]
+
+[[package]]
 name = "flake8"
 version = "7.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -604,106 +708,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/f1/c6/5d755a0f1f4857abbe5ea6f5907ed0e2b5df52bf4dde0a0fd768290e3084/langchain_core-0.3.74.tar.gz", hash = "sha256:ff604441aeade942fbcc0a3860a592daba7671345230c2078ba2eb5f82b6ba76", size = 569553, upload-time = "2025-08-07T20:47:05.094Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/4d/26/545283681ac0379d31c7ad0bac5f195e1982092d76c65ca048db9e3cec0e/langchain_core-0.3.74-py3-none-any.whl", hash = "sha256:088338b5bc2f6a66892f9afc777992c24ee3188f41cbc603d09181e34a228ce7", size = 443453, upload-time = "2025-08-07T20:47:03.853Z" },
-]
-
-[[package]]
-name = "langchain-egnyte"
-version = "0.0.1"
-source = { editable = "." }
-dependencies = [
-    { name = "httpx" },
-    { name = "langchain" },
-    { name = "langchain-core" },
-    { name = "langchain-tests" },
-    { name = "pydantic" },
-]
-
-[package.optional-dependencies]
-all = [
-    { name = "langchain-anthropic" },
-    { name = "langchain-openai" },
-    { name = "mkdocs" },
-    { name = "mkdocs-material" },
-    { name = "openai" },
-]
-anthropic = [
-    { name = "langchain-anthropic" },
-]
-azure = [
-    { name = "langchain-openai" },
-]
-docs = [
-    { name = "mkdocs" },
-    { name = "mkdocs-material" },
-]
-openai = [
-    { name = "langchain-openai" },
-    { name = "openai" },
-]
-test = [
-    { name = "langchain-tests" },
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
-    { name = "pytest-socket" },
-    { name = "python-dotenv" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "black" },
-    { name = "build" },
-    { name = "flake8" },
-    { name = "isort" },
-    { name = "langchain-tests" },
-    { name = "mypy" },
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
-    { name = "pytest-benchmark" },
-    { name = "pytest-cov" },
-    { name = "pytest-mock" },
-    { name = "pytest-recording" },
-    { name = "pytest-socket" },
-    { name = "python-dotenv" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "httpx", specifier = ">=0.24.0" },
-    { name = "langchain", specifier = ">=0.1.0" },
-    { name = "langchain-anthropic", marker = "extra == 'anthropic'", specifier = ">=0.1.0" },
-    { name = "langchain-core", specifier = ">=0.1.0" },
-    { name = "langchain-egnyte", extras = ["openai", "anthropic", "azure", "docs"], marker = "extra == 'all'" },
-    { name = "langchain-openai", marker = "extra == 'azure'", specifier = ">=0.1.0" },
-    { name = "langchain-openai", marker = "extra == 'openai'", specifier = ">=0.1.0" },
-    { name = "langchain-tests", specifier = ">=0.3.20" },
-    { name = "langchain-tests", marker = "extra == 'test'", specifier = ">=0.3.20" },
-    { name = "mkdocs", marker = "extra == 'docs'", specifier = ">=1.5.3" },
-    { name = "mkdocs-material", marker = "extra == 'docs'", specifier = ">=9.4.8" },
-    { name = "openai", marker = "extra == 'openai'", specifier = ">=1.6.1" },
-    { name = "pydantic", specifier = ">=2.0.0" },
-    { name = "pytest", marker = "extra == 'test'", specifier = ">=7.0.0" },
-    { name = "pytest-asyncio", marker = "extra == 'test'", specifier = ">=0.20.0" },
-    { name = "pytest-socket", marker = "extra == 'test'", specifier = ">=0.6.0" },
-    { name = "python-dotenv", marker = "extra == 'test'", specifier = ">=1.0.0" },
-]
-provides-extras = ["test", "openai", "anthropic", "azure", "docs", "all"]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "black", specifier = ">=23.11.0" },
-    { name = "build", specifier = ">=1.3.0" },
-    { name = "flake8", specifier = ">=6.1.0" },
-    { name = "isort", specifier = ">=5.12.0" },
-    { name = "langchain-tests", specifier = ">=0.3.0" },
-    { name = "mypy", specifier = ">=1.7.1" },
-    { name = "pytest", specifier = ">=7.4.0" },
-    { name = "pytest-asyncio", specifier = ">=0.21.0" },
-    { name = "pytest-benchmark", specifier = ">=4.0.0" },
-    { name = "pytest-cov", specifier = ">=4.1.0" },
-    { name = "pytest-mock", specifier = ">=3.11.0" },
-    { name = "pytest-recording", specifier = ">=0.13.0" },
-    { name = "pytest-socket", specifier = ">=0.6.0" },
-    { name = "python-dotenv", specifier = ">=1.0.0" },
 ]
 
 [[package]]
