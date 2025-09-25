@@ -41,7 +41,7 @@ Requirements:
     - langchain-core>=0.1.0 (REQUIRED for EgnyteRetriever)
     - langchain>=0.1.0 (REQUIRED for EgnyteRetriever)
 
-Version: 0.0.1
+Version: 0.0.2
 """
 
 # Comprehensive exception handling
@@ -68,7 +68,7 @@ from .utilities import (
 )
 
 # Package metadata
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 __author__ = "Abhishek Shahdeo"
 __email__ = "ashahdeo@egnyte.com"
 
