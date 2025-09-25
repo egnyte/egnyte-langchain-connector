@@ -4,7 +4,7 @@
 
 This package provides a comprehensive LangChain-compatible retriever for searching and retrieving documents from Egnyte using their advanced hybrid search API. It combines keyword and semantic search capabilities with full LangChain standard compliance.
 
-**Package Name**: `langchain-egnyte` (PyPI) / `langchain_egnyte` (imports)
+**Package Name**: `egnyte-langchain-connector` (PyPI) / `langchain_egnyte` (imports)
 
 ## Overview
 
@@ -50,12 +50,12 @@ pip install uv
 
 ```bash
 # Add to existing project
-uv add langchain-egnyte
+uv add egnyte-langchain-connector
 
-# Or create new project with langchain-egnyte
+# Or create new project with egnyte-langchain-connector
 uv init my-egnyte-project
 cd my-egnyte-project
-uv add langchain-egnyte
+uv add egnyte-langchain-connector
 ```
 
 #### Development Installation
@@ -77,7 +77,7 @@ uv sync --extra test --extra docs
 ### Traditional Installation with pip
 
 ```bash
-pip install langchain-egnyte
+pip install egnyte-langchain-connector
 ```
 
 ### With LangChain AI Provider Support
@@ -86,32 +86,32 @@ pip install langchain-egnyte
 
 ```bash
 # For OpenAI integration
-uv add langchain-egnyte[openai]
+uv add egnyte-langchain-connector[openai]
 
 # For Anthropic integration
-uv add langchain-egnyte[anthropic]
+uv add egnyte-langchain-connector[anthropic]
 
 # For Azure OpenAI integration
-uv add langchain-egnyte[azure]
+uv add egnyte-langchain-connector[azure]
 
 # Install all AI providers
-uv add langchain-egnyte[all]
+uv add egnyte-langchain-connector[all]
 ```
 
 #### Using pip
 
 ```bash
 # For OpenAI integration
-pip install langchain-egnyte[openai]
+pip install egnyte-langchain-connector[openai]
 
 # For Anthropic integration
-pip install langchain-egnyte[anthropic]
+pip install egnyte-langchain-connector[anthropic]
 
 # For Azure OpenAI integration
-pip install langchain-egnyte[azure]
+pip install egnyte-langchain-connector[azure]
 
 # Install all extras
-pip install langchain-egnyte[all]
+pip install egnyte-langchain-connector[all]
 ```
 
 ### Core Dependencies
@@ -586,7 +586,7 @@ results = await retriever.abatch(queries, config=configs)
 
 ### Modern Package Features
 
-- **uv Support**: Fast dependency management with `uv add langchain-egnyte`
+- **uv Support**: Fast dependency management with `uv add egnyte-langchain-connector`
 - **Modern Build**: Uses `hatchling` build system
 - **Type Safety**: Full type hints with Pydantic validation
 - **Performance**: Optimized for production workloads
