@@ -18,6 +18,8 @@ jobs:
         uses: astral-sh/setup-uv@v3
         with:
           version: "latest"
+      - name: Clean dist directory
+        run: rm -rf dist/
       - name: Build package
         run: uv build
       - name: Store the distribution packages
