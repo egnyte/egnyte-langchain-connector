@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "egnyte-langchain-connector"
-version = "0.0.2"
+version = "0.0.3"
 description = "LangChain retriever integration for Egnyte document search and retrieval"
 authors = [
     {name = "Abhishek Shahdeo", email = "ashahdeo@egnyte.com"}
