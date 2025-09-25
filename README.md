@@ -1,6 +1,6 @@
 # Egnyte Retriever for LangChain (`langchain_egnyte`)
 
-**Production-ready LangChain integration for Egnyte's hybrid search API**
+**LangChain integration for Egnyte's hybrid search API**
 
 This package provides a comprehensive LangChain-compatible retriever for searching and retrieving documents from Egnyte using their advanced hybrid search API. It combines keyword and semantic search capabilities with full LangChain standard compliance.
 
